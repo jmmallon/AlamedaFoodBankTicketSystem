@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 
-const port = 8888;
+const port = process.argv[2] ? process.argv[2] : 8888;
 const eventEmitter = new EventEmitter();
 
 // serve up production assets
