@@ -7,6 +7,6 @@ A. npm i
 B. node .\app.js
 
 To start the frontend:
-A. Navigate to .\FrontEnd\ticketing-frontend in terminal
+A. Navigate to src directory
 B. npm i
 C. npm start

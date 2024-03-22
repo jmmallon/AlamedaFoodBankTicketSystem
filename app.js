@@ -4,14 +4,21 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // Import the cors package
 const { EventEmitter } = require('events');
 const { Mutex } = require('async-mutex');
+const dotenv = require("dotenv").config();
+const https = require("https");
+const fs = require("fs");
+const pather = require("path");
 
 const app = express();
+
+const morgan = require("morgan");
 // Allow CORS from all devices
 app.use(cors({
   origin: '*',
   // You can also specify other CORS options here
 }));
 
+app.use(morgan("dev"));
 
 const port = process.argv[2] ? process.argv[2] : 8888;
 const eventEmitter = new EventEmitter();
@@ -359,7 +366,21 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+if (process.env.HTTP === true) {
+    const options = {
+      key: fs.readFileSync(pather.join(__dirname, process.env.SSL_KEY_FILE)),
+      cert: fs.readFileSync(pather.join(__dirname, process.env.SSL_CERT_FILE)),
+    };
+
+// Create HTTPS server
+    const server = https.createServer(options, app);
+
+    server.listen(port, () => {
+      console.log(`App listening on https://localhost:${port}`);
+    });
+} else {
+    // Start the server
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+}
